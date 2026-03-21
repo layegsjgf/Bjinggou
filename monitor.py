@@ -1,63 +1,52 @@
-import asyncio
-import aiohttp
-import os
+import requests
 import json
 from datetime import datetime
 
-# ========== 从环境变量读取配置 ==========
-WALLET_ADDRESS = os.environ.get("WALLET_ADDRESS", "")
-TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
-TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
-THRESHOLD_PERCENT = 20  # 涨幅超过 20% 触发提醒
-
-# 检查配置是否完整
-if not all([WALLET_ADDRESS, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID]):
-    print("错误：缺少必要的环境变量配置")
-    print("请检查 Secrets 设置")
-    exit(1)
-
-STATE_FILE = "last_value.json"
+# ========== 直接在这里填写配置 ==========
+WALLET_ADDRESS = "BBsaiHLZBAkVuhm7x52R2gHgn6Tf8HaPcF7ipchee3r3"
+TELEGRAM_BOT_TOKEN = "8613329028:AAHIQ42bAUI2aFoFB-swNNleFzkgMmfbB7s"
+TELEGRAM_CHAT_ID = "2113522339"
+THRESHOLD_PERCENT = 20
 # =======================================
 
-async def get_portfolio_value():
+STATE_FILE = "last_value.json"
+
+def get_portfolio_value():
     """通过 Solscan API 获取账户总价值"""
     url = f"https://public-api.solscan.io/account/{WALLET_ADDRESS}"
     
-    async with aiohttp.ClientSession() as session:
-        try:
-            async with session.get(url, timeout=30) as resp:
-                if resp.status == 200:
-                    data = await resp.json()
-                    # 总价值在 data 字段中
-                    if "data" in data and "totalUsdValue" in data["data"]:
-                        return float(data["data"]["totalUsdValue"])
-                    elif "totalUsdValue" in data:
-                        return float(data["totalUsdValue"])
-                    else:
-                        print(f"返回数据格式: {data.keys()}")
-                        return 0
-                else:
-                    print(f"Solscan API 返回错误: {resp.status}")
-                    return 0
-        except Exception as e:
-            print(f"获取总价值失败: {e}")
+    try:
+        response = requests.get(url, timeout=30)
+        if response.status_code == 200:
+            data = response.json()
+            if "data" in data and "totalUsdValue" in data["data"]:
+                return float(data["data"]["totalUsdValue"])
+            elif "totalUsdValue" in data:
+                return float(data["totalUsdValue"])
+            else:
+                print(f"返回数据: {data}")
+                return 0
+        else:
+            print(f"API 返回错误码: {response.status_code}")
             return 0
+    except Exception as e:
+        print(f"获取总价值失败: {e}")
+        return 0
 
-async def send_telegram(message):
+def send_telegram(message):
     """发送 Telegram 通知"""
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    async with aiohttp.ClientSession() as session:
-        try:
-            await session.post(url, json={
-                "chat_id": TELEGRAM_CHAT_ID,
-                "text": message,
-                "parse_mode": "HTML"
-            })
-        except Exception as e:
-            print(f"发送 Telegram 失败: {e}")
+    try:
+        requests.post(url, json={
+            "chat_id": TELEGRAM_CHAT_ID,
+            "text": message,
+            "parse_mode": "HTML"
+        })
+        print("Telegram 消息已发送")
+    except Exception as e:
+        print(f"发送 Telegram 失败: {e}")
 
 def load_last_value():
-    """读取上次保存的总价值"""
     try:
         with open(STATE_FILE, "r") as f:
             data = json.load(f)
@@ -66,24 +55,22 @@ def load_last_value():
         return 0
 
 def save_current_value(value):
-    """保存当前总价值"""
     with open(STATE_FILE, "w") as f:
         json.dump({"value": value, "timestamp": datetime.now().isoformat()}, f)
 
-async def monitor():
-    """主监控函数"""
+def monitor():
     print(f"[{datetime.now()}] 开始监控钱包: {WALLET_ADDRESS}")
+    print(f"Telegram Bot Token: {TELEGRAM_BOT_TOKEN[:10]}...")
+    print(f"Telegram Chat ID: {TELEGRAM_CHAT_ID}")
     
-    # 获取当前总价值
-    current_value = await get_portfolio_value()
+    current_value = get_portfolio_value()
     
     if current_value == 0:
-        print("获取总价值失败，可能是 API 限流或地址无效")
+        print("获取总价值失败")
         return
     
     print(f"当前账户总价值: ${current_value:.2f}")
     
-    # 读取上次值并比较
     last_value = load_last_value()
     
     if last_value > 0 and current_value > last_value:
@@ -102,18 +89,17 @@ async def monitor():
 
 ⚡️ 快去操作！
 """
-            await send_telegram(message)
+            send_telegram(message)
             print(f"✅ 已发送提醒！涨幅: {change_percent:.1f}%")
         else:
             print(f"涨幅 {change_percent:.1f}% 未达到阈值 {THRESHOLD_PERCENT}%")
-    elif last_value > 0 and current_value <= last_value:
+    elif last_value > 0:
         print(f"价值下降或持平: ${last_value:.2f} → ${current_value:.2f}")
     else:
         print("首次运行，已保存当前值")
     
-    # 保存当前值
     save_current_value(current_value)
     print("监控完成")
 
 if __name__ == "__main__":
-    asyncio.run(monitor())
+    monitor()
