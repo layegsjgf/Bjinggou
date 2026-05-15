@@ -16,6 +16,9 @@ WALLET_ADDRESS     = os.getenv("WALLET_ADDRESS",     "BBsaiHLZBAkVuhm7x52R2gHgn6
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8613329028:AAHIQ42bAUI2aFoFB-swNNleFzkgMmfbB7s")
 TELEGRAM_CHAT_ID   = os.getenv("TELEGRAM_CHAT_ID",   "2113522339")
 
+# 喵提醒配置（微信 + 电话推送）
+MIAO_REMIND_ID     = os.getenv("MIAO_REMIND_ID",     "t4yj5WH")
+
 # 报警阈值（百分比）
 PUMP_M5  =  30   # 5 分钟涨 30%
 PUMP_H1  =  50   # 1 小时涨 50%
@@ -104,6 +107,22 @@ def send_telegram(message):
             print(f"  Telegram HTTP {r.status_code}: {r.text[:200]}")
     except Exception as e:
         print(f"  Telegram error: {e}")
+
+
+def send_miao_remind(text):
+    """通过喵提醒推送（微信公众号 + 电话呼叫）"""
+    if not MIAO_REMIND_ID:
+        print("  (喵提醒未配置，跳过)")
+        return
+    url = "http://miaotixing.com/trigger"
+    try:
+        r = requests.get(url, params={"id": MIAO_REMIND_ID, "text": text}, timeout=15)
+        if r.status_code == 200:
+            print(f"  喵提醒已推送")
+        else:
+            print(f"  喵提醒 HTTP {r.status_code}: {r.text[:200]}")
+    except Exception as e:
+        print(f"  喵提醒 error: {e}")
 
 
 def load_state():
@@ -221,6 +240,9 @@ def main():
             f' | <a href="https://photon-sol.tinyastro.io/en/lp/{mint}">Photon</a>'
         )
         send_telegram(msg)
+        # 同时通过喵提醒推送（微信+电话）
+        miao_text = f"{emoji} {sym} {reason} | 价格${fmt_price(price)} | 持仓{fmt_money(usd_val)} | 5m{m5:+.1f}% 1h{h1:+.1f}% 6h{h6:+.1f}%"
+        send_miao_remind(miao_text)
         state.setdefault("alerts", {})[mint] = now
         alerts_sent += 1
         print(f"  ✅ 已推送 {sym}  {reason}")
