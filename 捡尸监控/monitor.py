@@ -29,7 +29,7 @@ COOLDOWN_MINUTES = 60      # 同一个币 60 分钟内不重复推送
 
 SOL_RPC       = "https://api.mainnet-beta.solana.com"
 TOKEN_PROGRAM = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
-STATE_FILE    = "state.json"
+STATE_FILE    = os.path.join(os.path.dirname(os.path.abspath(__file__)), "state.json")
 
 
 def rpc_call(method, params, retries=3):
