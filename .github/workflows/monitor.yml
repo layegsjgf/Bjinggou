@@ -2,7 +2,7 @@ name: Solana Wallet Monitor
 
 on:
   schedule:
-    - cron: '*/10 * * * *'  # 每 10 分钟一次
+    - cron: '*/15 * * * *'  # 每 15 分钟一次
   workflow_dispatch:
 
 permissions:
