@@ -114,11 +114,16 @@ def send_miao_remind(text):
     if not MIAO_REMIND_ID:
         print("  (喵提醒未配置，跳过)")
         return
-    url = "http://miaotixing.com/trigger"
+    url = "https://miaotixing.com/trigger"
     try:
         r = requests.get(url, params={"id": MIAO_REMIND_ID, "text": text}, timeout=15)
         if r.status_code == 200:
-            print(f"  喵提醒已推送")
+            body = (r.text or "").strip()
+            if "完成" in body or body == "":
+                print(f"  喵提醒已推送")
+            else:
+                # 服务端返回如"发送失败：提醒过于频繁..."
+                print(f"  喵提醒返回: {body[:200]}")
         else:
             print(f"  喵提醒 HTTP {r.status_code}: {r.text[:200]}")
     except Exception as e:
@@ -152,15 +157,15 @@ def fmt_money(n):
 
 
 def check_alert(chg):
-    """根据涨跌幅判断是否报警，返回 (是否暴涨, 描述) 或 None"""
+    """根据涨跌幅判断是否报警，返回 (是否暴涨, 描述, 触发规则简写) 或 None"""
     m5 = chg.get("m5") or 0
     h1 = chg.get("h1") or 0
     h6 = chg.get("h6") or 0
-    if m5 >= PUMP_M5: return True,  f"5分钟 +{m5:.1f}%"
-    if h1 >= PUMP_H1: return True,  f"1小时 +{h1:.1f}%"
-    if h6 >= PUMP_H6: return True,  f"6小时 +{h6:.1f}%"
-    if m5 <= DUMP_M5: return False, f"5分钟 {m5:.1f}%"
-    if h1 <= DUMP_H1: return False, f"1小时 {h1:.1f}%"
+    if m5 >= PUMP_M5: return True,  f"5分钟 +{m5:.1f}%",  f"5m≥+{PUMP_M5}%"
+    if h1 >= PUMP_H1: return True,  f"1小时 +{h1:.1f}%",  f"1h≥+{PUMP_H1}%"
+    if h6 >= PUMP_H6: return True,  f"6小时 +{h6:.1f}%",  f"6h≥+{PUMP_H6}%"
+    if m5 <= DUMP_M5: return False, f"5分钟 {m5:.1f}%",   f"5m≤{DUMP_M5}%"
+    if h1 <= DUMP_H1: return False, f"1小时 {h1:.1f}%",   f"1h≤{DUMP_H1}%"
     return None
 
 
@@ -190,6 +195,8 @@ def main():
         send_telegram("\n".join(lines))
 
     alerts_sent = 0
+    miao_alerts = []  # 累积本轮所有报警，最后汇总成一条喵提醒
+
     for mint, balance in holdings.items():
         info = dex.get(mint)
         if not info:
@@ -206,7 +213,7 @@ def main():
         if not result:
             continue
 
-        is_pump, reason = result
+        is_pump, reason, rule = result
 
         # 冷却
         last = state.get("alerts", {}).get(mint, 0)
@@ -225,8 +232,10 @@ def main():
         h24   = chg.get("h24") or 0
 
         emoji = "🚀" if is_pump else "🔻"
+        action = "暴涨" if is_pump else "暴跌"
         msg = (
-            f"{emoji} <b>{sym}</b>  {reason}\n"
+            f"{emoji} <b>{sym} {action}</b>\n"
+            f"📌 触发规则: <b>{rule}</b>  (实际 {reason})\n"
             f"<i>{name}</i>\n\n"
             f"💵 价格:    ${fmt_price(price)}\n"
             f"📊 持仓:    {balance:,.4g} ≈ {fmt_money(usd_val)}\n"
@@ -240,13 +249,20 @@ def main():
             f' | <a href="https://photon-sol.tinyastro.io/en/lp/{mint}">Photon</a>'
         )
         send_telegram(msg)
-        # 同时通过喵提醒推送（微信+电话）
-        miao_text = f"{emoji} {sym} {reason} | 价格${fmt_price(price)} | 持仓{fmt_money(usd_val)} | 5m{m5:+.1f}% 1h{h1:+.1f}% 6h{h6:+.1f}%"
-        send_miao_remind(miao_text)
+        # 累积喵提醒，本轮最后统一发送（避免触发30秒频控）
+        miao_alerts.append(f"{emoji}{sym} {rule}({reason}) 持仓{fmt_money(usd_val)}")
         state.setdefault("alerts", {})[mint] = now
         alerts_sent += 1
         print(f"  ✅ 已推送 {sym}  {reason}")
         time.sleep(1)  # 避免 Telegram 限流
+
+    # 汇总发送喵提醒（本轮所有命中合并成一条，规避30秒频控）
+    if miao_alerts:
+        if len(miao_alerts) == 1:
+            send_miao_remind(miao_alerts[0])
+        else:
+            head = f"⚠️本轮{len(miao_alerts)}个币异动:\n"
+            send_miao_remind(head + "\n".join(miao_alerts[:5]))
 
     # 清理 24h 之前的 alert 记录
     state["alerts"] = {m: t for m, t in state.get("alerts", {}).items() if now - t < 86400}
