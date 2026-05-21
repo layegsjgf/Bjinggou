@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         纪律面板 (jilv-trade)
 // @namespace    https://github.com/layegsjgf/jilv-trade
-// @version      0.2.0
+// @version      0.3.0
 // @description  debot.ai 悬浮迷你纪律面板
 // @author       layegsjgf
 // @match        https://debot.ai/*
@@ -42,29 +42,29 @@
     // --- CSS ---
     const css = document.createElement('style');
     css.textContent = `
-#jilv-panel{position:fixed;z-index:2147483647;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;font-size:12px;background:rgba(20,22,28,.93);color:#ddd;border:1px solid rgba(255,255,255,.08);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.4);backdrop-filter:blur(6px);padding:8px 10px;user-select:none;min-width:0;width:max-content;}
+#jilv-panel{position:fixed;z-index:2147483647;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;font-size:14.4px;background:rgba(20,22,28,.93);color:#ddd;border:1px solid rgba(255,255,255,.08);border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.4);backdrop-filter:blur(6px);padding:10px 12px;user-select:none;min-width:0;width:max-content;}
 #jilv-panel *{box-sizing:border-box;}
-.jl-row{display:flex;align-items:center;gap:6px;white-space:nowrap;}
-.jl-row.stats{margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.06);}
-.jl-lbl{color:#999;font-size:11px;}
-.jl-num{color:#4ade80;font-weight:700;font-size:13px;min-width:12px;text-align:center;}
+.jl-row{display:flex;align-items:center;gap:7px;white-space:nowrap;}
+.jl-row.stats{margin-bottom:7px;padding-bottom:7px;border-bottom:1px solid rgba(255,255,255,.06);}
+.jl-lbl{color:#999;font-size:13px;}
+.jl-num{color:#4ade80;font-weight:700;font-size:15.5px;min-width:14px;text-align:center;}
 .jl-num.err{color:#f87171;}
-.jl-sep{color:rgba(255,255,255,.15);margin:0 2px;}
-.jl-stepper{display:inline-flex;flex-direction:column;justify-content:center;align-items:center;width:10px;height:18px;cursor:pointer;margin-left:1px;}
-.jl-stepper .arrow{display:block;width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;}
-.jl-stepper .up{border-bottom:5px solid #888;margin-bottom:2px;}
-.jl-stepper .down{border-top:5px solid #888;}
+.jl-sep{color:rgba(255,255,255,.15);margin:0 3px;}
+.jl-stepper{display:inline-flex;flex-direction:column;justify-content:center;align-items:center;width:12px;height:22px;cursor:pointer;margin-left:2px;}
+.jl-stepper .arrow{display:block;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;}
+.jl-stepper .up{border-bottom:6px solid #888;margin-bottom:3px;}
+.jl-stepper .down{border-top:6px solid #888;}
 .jl-stepper .up:hover{border-bottom-color:#4ade80;}
 .jl-stepper .down:hover{border-top-color:#f87171;}
-.jl-step{display:flex;align-items:center;padding:3px 0;cursor:pointer;border-radius:3px;gap:4px;}
+.jl-step{display:flex;align-items:center;padding:4px 0;cursor:pointer;border-radius:4px;gap:5px;}
 .jl-step:hover{background:rgba(255,255,255,.04);}
-.jl-step .txt{color:#ddd;font-size:12px;transition:all .15s;}
+.jl-step .txt{color:#ddd;font-size:14.4px;transition:all .15s;}
 .jl-step.done .txt{color:#666;text-decoration:line-through;}
-.jl-step .ck{width:13px;height:13px;border:1.5px solid #555;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;}
+.jl-step .ck{width:16px;height:16px;border:1.5px solid #555;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
 .jl-step.done .ck{border-color:#4ade80;background:#4ade80;color:#000;font-weight:bold;}
-.jl-grip{position:absolute;bottom:3px;right:5px;color:#555;font-size:11px;cursor:move;line-height:1;}
+.jl-grip{position:absolute;bottom:4px;right:6px;color:#555;font-size:13px;cursor:move;line-height:1;}
 .jl-grip:hover{color:#999;}
-.jl-total-num{color:#888;font-weight:600;font-size:11px;min-width:10px;text-align:center;}
+.jl-total-num{color:#888;font-weight:600;font-size:13px;min-width:12px;text-align:center;}
 `;
     document.documentElement.appendChild(css);
 
