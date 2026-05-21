@@ -25,11 +25,13 @@
         const raw = GM_getValue(STORAGE_KEY, null);
         let s = raw ? (typeof raw === 'string' ? JSON.parse(raw) : raw) : null;
         if (!s) {
-            s = { todayOk: 0, todayErr: 0, totalOk: 0, totalErr: 0, date: todayStr(), checks: [false,false,false], pos: null };
+            s = { todayOk: 0, todayErr: 0, totalOk: 0, totalErr: 0, todayJudge: 0, totalJudge: 0, date: todayStr(), checks: [false,false,false], pos: null };
         }
+        if (typeof s.todayJudge !== 'number') { s.todayJudge = 0; s.totalJudge = 0; }
         if (s.date !== todayStr()) {
             s.todayOk = 0;
             s.todayErr = 0;
+            s.todayJudge = 0;
             s.date = todayStr();
         }
         if (!Array.isArray(s.checks) || s.checks.length !== 3) s.checks = [false,false,false];
@@ -73,10 +75,11 @@
     panel.id = 'jilv-panel';
     panel.innerHTML = `
 <div class="jl-row stats">
-  <span class="jl-lbl">纪律交易</span><span class="jl-num" id="jl-ok">0</span><span class="jl-stepper" id="jl-ok-s"><span class="arrow up"></span><span class="arrow down"></span></span>
+  <span class="jl-lbl">纪律</span><span class="jl-num" id="jl-ok">0</span><span class="jl-stepper" id="jl-ok-s"><span class="arrow up"></span><span class="arrow down"></span></span>
   <span class="jl-lbl" style="margin-left:4px;">错</span><span class="jl-num err" id="jl-err">0</span><span class="jl-stepper" id="jl-err-s"><span class="arrow up"></span><span class="arrow down"></span></span>
+  <span class="jl-lbl" style="margin-left:4px;">判</span><span class="jl-num" id="jl-judge" style="color:#60a5fa;">0</span>
   <span class="jl-sep">┃</span>
-  <span class="jl-lbl">总</span><span class="jl-total-num" id="jl-tok">0</span><span class="jl-total-num" id="jl-terr" style="color:#666;">0</span>
+  <span class="jl-lbl">总</span><span class="jl-total-num" id="jl-tok">0</span><span class="jl-total-num" id="jl-terr" style="color:#666;">0</span><span class="jl-total-num" id="jl-tjudge" style="color:#4a7ab5;">0</span>
 </div>
 <div class="jl-step" data-i="0"><span class="txt">1. 4h 位置</span><span class="ck"></span></div>
 <div class="jl-step" data-i="1"><span class="txt">2. 入场画像</span><span class="ck"></span></div>
@@ -89,8 +92,10 @@
     function render() {
         panel.querySelector('#jl-ok').textContent = state.todayOk;
         panel.querySelector('#jl-err').textContent = state.todayErr;
+        panel.querySelector('#jl-judge').textContent = state.todayJudge;
         panel.querySelector('#jl-tok').textContent = state.totalOk;
         panel.querySelector('#jl-terr').textContent = state.totalErr;
+        panel.querySelector('#jl-tjudge').textContent = state.totalJudge;
         panel.querySelectorAll('.jl-step').forEach((el, i) => {
             el.classList.toggle('done', !!state.checks[i]);
             el.querySelector('.ck').textContent = state.checks[i] ? '✓' : '';
@@ -123,6 +128,12 @@
             if (dragged) return;
             const i = Number(el.dataset.i);
             state.checks[i] = !state.checks[i];
+            // 三项全勾 → 判+1 并自动重置
+            if (state.checks.every(Boolean)) {
+                state.todayJudge++;
+                state.totalJudge++;
+                state.checks = [false, false, false];
+            }
             save(); render();
         });
     });
@@ -169,7 +180,7 @@
     // 跨天检测
     setInterval(() => {
         if (state.date !== todayStr()) {
-            state.todayOk = 0; state.todayErr = 0;
+            state.todayOk = 0; state.todayErr = 0; state.todayJudge = 0;
             state.date = todayStr();
             state.checks = [false,false,false];
             save(); render();
