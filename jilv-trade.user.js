@@ -104,11 +104,13 @@
             e.stopPropagation();
             state[keyToday]++;
             state[keyTotal]++;
+            state.checks = [false, false, false];
             save(); render();
         });
         el.querySelector('.down').addEventListener('click', (e) => {
             e.stopPropagation();
             if (state[keyToday] > 0) { state[keyToday]--; state[keyTotal] = Math.max(0, state[keyTotal]-1); }
+            state.checks = [false, false, false];
             save(); render();
         });
     }
