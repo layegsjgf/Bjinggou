@@ -25,9 +25,10 @@
         const raw = GM_getValue(STORAGE_KEY, null);
         let s = raw ? (typeof raw === 'string' ? JSON.parse(raw) : raw) : null;
         if (!s) {
-            s = { todayOk: 0, todayErr: 0, totalOk: 0, totalErr: 0, todayJudge: 0, totalJudge: 0, date: todayStr(), checks: [false,false,false], pos: null };
+            s = { todayOk: 0, todayErr: 0, totalOk: 0, totalErr: 0, todayJudge: 0, totalJudge: 0, date: todayStr(), checks: [false,false,false], pos: null, hidden: false };
         }
         if (typeof s.todayJudge !== 'number') { s.todayJudge = 0; s.totalJudge = 0; }
+        if (typeof s.hidden !== 'boolean') s.hidden = false;
         if (s.date !== todayStr()) {
             s.todayOk = 0;
             s.todayErr = 0;
@@ -187,6 +188,25 @@
         }
     }, 60000);
 
+    // --- 快捷键 Shift+X 切换显示/隐藏 ---
+    function applyVisibility() {
+        panel.style.display = state.hidden ? 'none' : 'block';
+    }
+    document.addEventListener('keydown', (e) => {
+        // Shift + X，且没有按 Ctrl/Alt/Meta，避免和系统快捷键冲突
+        if (e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey && (e.key === 'X' || e.key === 'x')) {
+            // 如果焦点在输入框/可编辑元素里就不触发，避免影响 debot 上的搜索框等
+            const t = e.target;
+            const tag = (t && t.tagName) ? t.tagName.toLowerCase() : '';
+            if (tag === 'input' || tag === 'textarea' || (t && t.isContentEditable)) return;
+            state.hidden = !state.hidden;
+            save();
+            applyVisibility();
+            e.preventDefault();
+        }
+    });
+
     initPos();
     render();
+    applyVisibility();
 })();
