@@ -1,7 +1,5 @@
 {
-  "alerts": {
-    "FsTc9VgMQoHAc5o8DdeAFv1RphgNjb4kZTxx8JQSpump": 1780344394
-  },
+  "alerts": {},
   "known_tokens": [
     "2SbUMHVzAAwyK7wh4ZC335Y3AHXuNybDjruvktWGpump",
     "2VYVwrwSNM8WxbFdPU4KQpZUB9FWCenFFoDqvpHQ7rZE",
@@ -140,5 +138,5 @@
     "oha3mwwm2tqWRouJ2KGUiz4Vz9FCRcPm1fApm87bonk",
     "rCDpCrYepyYffZz7AQhBV1LMJvWo7mps8fWr4Bvpump"
   ],
-  "last_run": "2026-06-02T17:24:02.291919+00:00"
+  "last_run": "2026-06-02T20:25:16.032496+00:00"
 }
