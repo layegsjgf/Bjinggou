@@ -3,7 +3,6 @@
   "known_tokens": [
     "2SbUMHVzAAwyK7wh4ZC335Y3AHXuNybDjruvktWGpump",
     "2VYVwrwSNM8WxbFdPU4KQpZUB9FWCenFFoDqvpHQ7rZE",
-    "2gkevSAUExkSUwwwj6uNbzwwNCXyzEBkGLg4wAyUpump",
     "2ua8kC4UxFNSdZww4pFJ8Th51cksqx4dgViiSFyppump",
     "33rVymHHPxfMvg4EHKBRF3h8a37cG7Et3eQWZzAkpump",
     "3BeJ9zCgQhaqKMu2HgKJ79yQBChD1Pf3hPwRX44fpump",
@@ -17,7 +16,6 @@
     "4FkNq8RcCYg4ZGDWh14scJ7ej3m5vMjYTcWoJVkupump",
     "4T54PGF4gAU75NL9j2GHvrVbR6u5zjyJE4zGuJbkpump",
     "4TcqMXdZBjxirf2vtYikWt1ix3YoHJoFAZwrqe39pump",
-    "4ZDFnVXL2ED9htVnLTNMwCwVttp8TbBJcwzFePZwpump",
     "4h26eponcR8jc3N3EuQZ72ZCpurpGoszvFgGiekTpump",
     "4j9bDg7iWNah1Qa61rrqwWZMtEdqV3fV56SzyhfNpump",
     "4jZXkSNgTQKCDb36ECZ6a2aNzcUniGcDeXgTdtM2HxAX",
@@ -98,7 +96,6 @@
     "ExZS1zbG7qopJvA87efQDysHrnJxyjzt8FgVyiLijZwM",
     "F1fUkWEjvqHhkKB26wvoEsUr4SBpFt1DZnSSTpbgpump",
     "F2kC6LT4pJTnGUaP5DjQxxhbZc9xUoMvRQ6q3wTkpump",
-    "F8dKXiNk2eX2VB6DDPNS7yLTe5VbHcyhnKYf21ampump",
     "F9TgEJLLRUKDRF16HgjUCdJfJ5BK6ucyiW8uJxVPpump",
     "FEFwYgVvKaNUMxKaUB7vpoQ9dZkoHAzfHa1p4joXEaKA",
     "FH5sNBwBNNcGdkZmB6oHkoTH7cjEpVN9hgfhoRC6pump",
@@ -106,7 +103,6 @@
     "FPSeY5kpjTmkGeN2aWhciJZtrTGCMnhQUGAFqnQYzoE9",
     "FW7aAw92HWnWrUmGe4HHrdHjqshQ2CnyFMqBkSDnpump",
     "Fiq8K21K62zLFP6q6Wrh7nc4AZJmqoavyTxEX6Bkpump",
-    "FjTJCCQpLU4fpH58mN1bTQXiQsjJVYai3QYFjYqYpump",
     "FsTc9VgMQoHAc5o8DdeAFv1RphgNjb4kZTxx8JQSpump",
     "Fxm6tJ2khHbLVcSgnYUqg9FiBduVRLEvdQR67dvQ3eGp",
     "G1jydhghPMLBXRFPR3wyJ9HbpKPR3Rv7M8Yakfo5pump",
@@ -115,7 +111,6 @@
     "GFUgXbMeDnLkhZaJS3nYFqunqkFNMRo9ukhyajeXpump",
     "GU7aPQnDmoXA13gUy6L27utgdp6QVZy3P6cJ94Sbpump",
     "GUxKzvR7QmvA5M5j2LufNynVMa6hxjWkERDM7Vnpvvii",
-    "GkeUTuaFB4oZADaqiCo3yauHNx9SxUNn8euHptEEbonk",
     "GxojtGb9BMitaKSzJVHcB5XkZHc7E7swSRy9ZwxUxza1",
     "H4iUsC9rLNsXQ1GAfv8Bs53dZnBn9rqSxhE388YRpump",
     "HFju3ohuEieDmFSpRRj1SZpizLQc8HayHgJDqwBWYtkN",
@@ -136,5 +131,5 @@
     "oha3mwwm2tqWRouJ2KGUiz4Vz9FCRcPm1fApm87bonk",
     "rCDpCrYepyYffZz7AQhBV1LMJvWo7mps8fWr4Bvpump"
   ],
-  "last_run": "2026-06-04T12:18:59.543299+00:00"
+  "last_run": "2026-06-04T15:58:29.594737+00:00"
 }
